@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1089533313864",
+    "project_id": "expensetrackapp-edec8",
+    "storage_bucket": "expensetrackapp-edec8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1089533313864:android:3dcf4ec0a52d39c64ca97d",
+        "android_client_info": {
+          "package_name": "com.example.untitled"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDAMKrNS9_QpGr6BE2dn6i6x2KeFsZ47IA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
