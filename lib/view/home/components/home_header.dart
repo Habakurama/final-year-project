@@ -267,7 +267,7 @@ class _HomeHeaderState extends State<HomeHeader> {
                 Obx(() => Text(
                       "${widget.homeController.totalIncome.value.toStringAsFixed(0)} Frw",
                       style: TextStyle(
-                        color: primaryColor,
+                        color:textColor,
                         fontSize: 24,
                         fontWeight: FontWeight.w800,
                         letterSpacing: -0.5,

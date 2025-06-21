@@ -24,7 +24,7 @@ class SavingPdfGenerator {
   Future<void> generateAndSaveSavingReport() async {
     try {
       print("Starting Saving PDF generation...");
-          await savingCtrl.loadsavingFromFirebase();
+      await savingCtrl.loadsavingFromFirebase();
 
       final pdf = await _createPdfDocument();
       final bytes = await pdf.save();
@@ -51,26 +51,37 @@ class SavingPdfGenerator {
     final pdf = pw.Document();
     final formatter = DateFormat('yyyy-MM-dd');
 
+    // Get the title month from savings or current date
+    DateTime titleDate;
+    if (savingCtrl.currentMonthSavings.isNotEmpty && savingCtrl.currentMonthSavings[0]['date'] != null) {
+      titleDate = savingCtrl.currentMonthSavings[0]['date'] as DateTime;
+    } else {
+      titleDate = DateTime.now();
+    }
+
+    final titleText = "Monthly Saving - ${DateFormat('MMMM yyyy').format(titleDate)}";
+
     pdf.addPage(
       pw.MultiPage(
         build: (context) => [
           pw.Header(
             level: 0,
             child: pw.Text(
-              "User Monthly Saving Report",
+              titleText,
               style: pw.TextStyle(font: ttf, fontSize: 24),
             ),
           ),
           pw.Table.fromTextArray(
-            headers: ['ID', 'CategoryName', 'Amount', 'Date'],
-            data: savingCtrl.currentMonthSavings.map((saving) {
+            headers: ['No.', 'Category Name', 'Amount', 'Date'],
+            data: List.generate(savingCtrl.currentMonthSavings.length, (index) {
+              final saving = savingCtrl.currentMonthSavings[index];
               return [
-                saving['id'] ?? '',
+                (index + 1).toString(),
                 saving['categoryName'] ?? '',
                 "${saving['amount']} RWF",
                 formatter.format((saving['date'] as DateTime?) ?? DateTime.now()),
               ];
-            }).toList(),
+            }),
             headerStyle: pw.TextStyle(font: ttf, fontWeight: pw.FontWeight.bold),
             cellStyle: pw.TextStyle(font: ttf),
           ),

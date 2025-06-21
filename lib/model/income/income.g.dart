@@ -13,7 +13,7 @@ Income _$IncomeFromJson(Map<String, dynamic> json) => Income(
       date:
           json['date'] == null ? null : DateTime.parse(json['date'] as String),
       userId: json['userId'] as String?,
-         shared: json['shared'] as bool? ?? true, 
+         shared: json['shared'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$IncomeToJson(Income instance) => <String, dynamic>{

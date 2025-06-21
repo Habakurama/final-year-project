@@ -8,7 +8,9 @@ class Expense {
   final String? userId;
   final double? remaining;
   final double? used;
-  
+  final bool shared;  // New field with default value
+
+
   Expense({
     required this.id,
     required this.category,
@@ -17,8 +19,9 @@ class Expense {
     required this.userId,
     this.remaining,  // Optional field
     this.used,       // Optional field
+    this.shared = false,  // Default value set to false
   });
-  
+
   // From JSON: Convert Timestamp to DateTime and ensure proper double conversion
   factory Expense.fromJson(Map<String, dynamic> json) {
     return Expense(
@@ -29,9 +32,10 @@ class Expense {
       userId: json['userId'] as String?,
       remaining: (json['remaining'] as num?)?.toDouble(),
       used: (json['used'] as num?)?.toDouble(),
+      shared: json['shared'] as bool? ?? false,  // Default to false if null
     );
   }
-  
+
   // To JSON: Firestore expects DateTime as a Timestamp
   Map<String, dynamic> toJson() {
     return {
@@ -42,21 +46,22 @@ class Expense {
       'userId': userId,
       'remaining': remaining,
       'used': used,
+      'shared': shared,  // Include shared field
     };
   }
-  
+
   // Helper method to calculate remaining amount
   double get calculatedRemaining {
     if (amount == null || used == null) return 0.0;
     return amount! - used!;
   }
-  
+
   // Helper method to calculate used percentage
   double get usedPercentage {
     if (amount == null || amount == 0 || used == null) return 0.0;
     return (used! / amount!) * 100;
   }
-  
+
   // Helper method to create a copy with updated values
   Expense copyWith({
     String? id,
@@ -66,6 +71,7 @@ class Expense {
     String? userId,
     double? remaining,
     double? used,
+    bool? shared,  // Include shared in copyWith
   }) {
     return Expense(
       id: id ?? this.id,
@@ -75,6 +81,7 @@ class Expense {
       userId: userId ?? this.userId,
       remaining: remaining ?? this.remaining,
       used: used ?? this.used,
+      shared: shared ?? this.shared,  // Use provided value or current value
     );
   }
 }

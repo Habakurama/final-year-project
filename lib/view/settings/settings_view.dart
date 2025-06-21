@@ -8,6 +8,9 @@ import 'package:untitled/report/saving_report.dart';
 import 'package:untitled/service/AuthenticationService.dart';
 import 'package:untitled/view/login/edit_profile.dart';
 import 'package:untitled/view/login/sign_in_view.dart';
+import 'package:untitled/controller/home_controller.dart';
+import 'package:untitled/controller/expense_controller.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../common_widget/icon_item_row.dart';
 import '../../report/budget_report.dart';
@@ -22,18 +25,39 @@ class SettingsView extends StatefulWidget {
 class _SettingsViewState extends State<SettingsView> {
   bool isActive = false;
   final AuthenticationService authService = AuthenticationService();
-  late ThemeController themeController;
+
+  // Make these nullable and check for null before using
+  ThemeController? themeController;
+  HomeController? homeController;
+  ExpenseController? expenseController;
 
   String selectedTheme = "";
-
   String userName = '';
   String userEmail = '';
+
+  // Shared toggle state
+  bool isSharedEnabled = false;
+  bool isSharedLoading = false;
 
   @override
   void initState() {
     super.initState();
     fetchCurrentUser();
-    themeController = Get.find<ThemeController>();
+    initializeControllers();
+    loadSharedPreference();
+  }
+
+  // Separate method to initialize controllers with error handling
+  void initializeControllers() {
+    try {
+      themeController = Get.find<ThemeController>();
+      homeController = Get.find<HomeController>();
+      expenseController = Get.find<ExpenseController>();
+      print("✅ Controllers initialized successfully");
+    } catch (e) {
+      print("❌ Error initializing controllers: $e");
+      // You might want to show a snackbar or handle this error appropriately
+    }
   }
 
   @override
@@ -54,6 +78,188 @@ class _SettingsViewState extends State<SettingsView> {
         userEmail = userData['email'] ?? 'No Email';
       });
     }
+  }
+
+  // Load the shared preference when screen initializes
+  Future<void> loadSharedPreference() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      setState(() {
+        isSharedEnabled = prefs.getBool('shared_enabled') ?? false;
+      });
+      print("🔍 Loaded shared preference: $isSharedEnabled");
+    } catch (e) {
+      print("❌ Error loading shared preference: $e");
+      setState(() {
+        isSharedEnabled = false;
+      });
+    }
+  }
+
+  // Save the shared preference
+  Future<void> saveSharedPreference(bool value) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('shared_enabled', value);
+      print("✅ Saved shared preference: $value");
+    } catch (e) {
+      print("❌ Error saving shared preference: $e");
+    }
+  }
+
+  // Toggle shared functionality with null checks
+  Future<void> toggleShared(bool value) async {
+    // Check if controllers are initialized, try to reinitialize if not
+    if (homeController == null || expenseController == null) {
+      print("⚠️ Controllers not initialized, attempting to reinitialize...");
+      initializeControllers();
+
+      // If still null after reinitialization, show error
+      if (homeController == null || expenseController == null) {
+        Get.snackbar(
+          "Error",
+          "Unable to initialize controllers. Please restart the app.",
+          colorText: Colors.white,
+          backgroundColor: Colors.red.withOpacity(0.8),
+          duration: Duration(seconds: 3),
+          snackPosition: SnackPosition.BOTTOM,
+        );
+        return;
+      }
+    }
+
+    try {
+      setState(() {
+        isSharedLoading = true;
+      });
+
+      // Show loading dialog
+      Get.dialog(
+        AlertDialog(
+          content: Row(
+            children: [
+              CircularProgressIndicator(
+                color: Theme.of(context).primaryColor,
+              ),
+              SizedBox(width: 16),
+              Text(
+                value ? "Enabling shared mode..." : "Disabling shared mode...",
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
+                ),
+              ),
+            ],
+          ),
+        ),
+        barrierDismissible: false,
+      );
+
+      // Update both income and expenses with null-safe calls
+      await Future.wait([
+        homeController!.updateAllIncomeShared(value),
+        expenseController!.updateAllExpensesShared(value),
+      ]);
+
+      // Update the state and save preference
+      setState(() {
+        isSharedEnabled = value;
+      });
+      await saveSharedPreference(value);
+
+      // Close loading dialog
+      Get.back();
+
+      // Show success message
+      Get.snackbar(
+        "Success",
+        value
+            ? "All income and expenses are now shared"
+            : "All income and expenses are now private",
+        colorText: Colors.white,
+        backgroundColor: Colors.green.withOpacity(0.8),
+        duration: Duration(seconds: 3),
+        snackPosition: SnackPosition.BOTTOM,
+      );
+
+      print("✅ Successfully toggled shared mode to: $value");
+
+    } catch (e) {
+      // Close loading dialog if it's open
+      if (Get.isDialogOpen == true) {
+        Get.back();
+      }
+
+      // Revert the toggle state
+      setState(() {
+        isSharedEnabled = !value;
+      });
+
+      // Show error message
+      Get.snackbar(
+        "Error",
+        "Failed to update shared status: ${e.toString()}",
+        colorText: Colors.white,
+        backgroundColor: Colors.red.withOpacity(0.8),
+        duration: Duration(seconds: 4),
+        snackPosition: SnackPosition.BOTTOM,
+      );
+
+      print("❌ Error toggling shared mode: $e");
+    } finally {
+      setState(() {
+        isSharedLoading = false;
+      });
+    }
+  }
+
+  // Method to confirm toggle action
+  void confirmToggleShared(bool newValue) {
+    String title = newValue ? "Enable Shared Mode" : "Disable Shared Mode";
+    String message = newValue
+        ? "This will make all your income and expenses visible to shared users. Continue?"
+        : "This will make all your income and expenses private. Continue?";
+
+    Get.dialog(
+      AlertDialog(
+        backgroundColor: Theme.of(context).cardColor,
+        title: Text(
+          title,
+          style: TextStyle(
+            color: Theme.of(context).textTheme.bodyMedium?.color,
+          ),
+        ),
+        content: Text(
+          message,
+          style: TextStyle(
+            color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.8),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text(
+              "Cancel",
+              style: TextStyle(
+                color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Get.back();
+              toggleShared(newValue);
+            },
+            child: Text(
+              "Confirm",
+              style: TextStyle(
+                color: newValue ? Colors.green : Colors.orange,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -93,7 +299,7 @@ class _SettingsViewState extends State<SettingsView> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  
+
                   // Profile Avatar with shadow
                   Container(
                     padding: const EdgeInsets.all(4),
@@ -115,21 +321,21 @@ class _SettingsViewState extends State<SettingsView> {
                     ),
                     child: CircleAvatar(
                       radius: 45,
-                      backgroundColor: Theme.of(context).brightness == Brightness.dark 
-                    ? TColor.gray80 
-                    : theme.cardColor,
+                      backgroundColor: Theme.of(context).brightness == Brightness.dark
+                          ? TColor.gray80
+                          : theme.cardColor,
                       child: Icon(
                         Icons.person,
                         size: 50,
-                        color: Theme.of(context).brightness == Brightness.dark 
-                    ? TColor.white
-                    : theme.primaryColor,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? TColor.white
+                            : theme.primaryColor,
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 16),
-                  
+
                   // User Info
                   Text(
                     userName,
@@ -148,9 +354,9 @@ class _SettingsViewState extends State<SettingsView> {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  
+
                   const SizedBox(height: 16),
-                  
+
                   // Enhanced Edit Profile Button
                   InkWell(
                     borderRadius: BorderRadius.circular(25),
@@ -178,7 +384,7 @@ class _SettingsViewState extends State<SettingsView> {
                           ),
                         ],
                       ),
-                      child: Row(
+                      child: const Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
@@ -209,6 +415,83 @@ class _SettingsViewState extends State<SettingsView> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Privacy & Sharing Section
+                  sectionTitle("Privacy & Sharing", textColor, Icons.share),
+                  const SizedBox(height: 12),
+                  enhancedContainer(
+                    theme,
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: isSharedEnabled
+                              ? primaryColor.withOpacity(0.3)
+                              : theme.dividerColor.withOpacity(0.2),
+                        ),
+                        color: isSharedEnabled
+                            ? primaryColor.withOpacity(0.05)
+                            : null,
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: isSharedEnabled
+                                  ? primaryColor.withOpacity(0.1)
+                                  : theme.dividerColor.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Icon(
+                              isSharedEnabled ? Icons.share : Icons.lock,
+                              color: isSharedEnabled ? primaryColor : textColor?.withOpacity(0.6),
+                              size: 20,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  isSharedEnabled ? "Shared Mode" : "Private Mode",
+                                  style: TextStyle(
+                                    color: textColor,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  isSharedEnabled
+                                      ? "Your data is visible to shared users"
+                                      : "Your data is private and secure",
+                                  style: TextStyle(
+                                    color: textColor?.withOpacity(0.6),
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Switch.adaptive(
+                            value: isSharedEnabled,
+                            onChanged: isSharedLoading
+                                ? null
+                                : (value) => confirmToggleShared(value),
+                            activeColor: primaryColor,
+                            activeTrackColor: primaryColor.withOpacity(0.3),
+                            inactiveThumbColor: textColor?.withOpacity(0.4),
+                            inactiveTrackColor: theme.dividerColor.withOpacity(0.3),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
                   // Reports Section
                   sectionTitle("Reports", textColor, Icons.assessment),
                   const SizedBox(height: 12),
@@ -251,11 +534,11 @@ class _SettingsViewState extends State<SettingsView> {
                             await generator.generateAndSaveBudgetReport();
                           },
                         ),
-
-                         enhancedIconItemRow(
+                        const SizedBox(height: 16),
+                        enhancedIconItemRow(
                           theme: theme,
                           title: "Saving report",
-                          subtitle: "Track your saving  performance",
+                          subtitle: "Track your saving performance",
                           icon: Icons.savings,
                           color: Colors.blue,
                           onTap: () async {
@@ -314,7 +597,7 @@ class _SettingsViewState extends State<SettingsView> {
                             onChanged: (value) {
                               setState(() {
                                 selectedTheme = value!;
-                                themeController.setThemeMode(ThemeMode.light);
+                                themeController?.setThemeMode(ThemeMode.light);
                               });
                             },
                           ),
@@ -358,7 +641,7 @@ class _SettingsViewState extends State<SettingsView> {
                             onChanged: (value) {
                               setState(() {
                                 selectedTheme = value!;
-                                themeController.setThemeMode(ThemeMode.dark);
+                                themeController?.setThemeMode(ThemeMode.dark);
                               });
                             },
                           ),
@@ -428,7 +711,7 @@ class _SettingsViewState extends State<SettingsView> {
                       ),
                     ),
                   ),
-                  
+
                   // Bottom padding to ensure content is visible
                   const SizedBox(height: 40),
                 ],

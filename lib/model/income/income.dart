@@ -29,7 +29,7 @@ class Income {
     required this.amount,
     required this.date,
     required this.userId,
-    this.shared = true, // ✅ default to false if not provided
+    this.shared = false, // ✅ default to false if not provided
   });
 
   // ✅ From JSON: Convert Timestamp to DateTime and parse shared
@@ -40,7 +40,7 @@ class Income {
       amount: (json['amount'] as num?)?.toDouble(),
       date: (json['date'] as Timestamp?)?.toDate(),
       userId: json['userId'] as String?,
-      shared: json['shared'] as bool? ?? true, // ✅ default to false if null
+      shared: json['shared'] as bool? ?? false, // ✅ default to false if null
     );
   }
 

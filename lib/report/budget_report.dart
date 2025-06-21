@@ -11,7 +11,7 @@ import '../controller/budgetController.dart';
 
 class BudgetPdfGenerator {
   final BudgetController budgetCtrl = Get.find();
-    final ExpenseController expenseCtrl = Get.find(); 
+  final ExpenseController expenseCtrl = Get.find();
 
   void _log(String title, String message, {bool isError = false}) {
     print("${isError ? 'ERROR' : 'INFO'} - $title: $message");
@@ -53,26 +53,32 @@ class BudgetPdfGenerator {
 
     final pdf = pw.Document();
     final formatter = DateFormat('yyyy-MM-dd');
+    final now = DateTime.now();
 
-    final startDate = budgets.isNotEmpty ? budgets.first['startDate'] : null;
-    final endDate = budgets.isNotEmpty ? budgets.first['endDate'] : null;
+    // Title like: "Monthly Budget - June 2025"
+    final String title = "Monthly Budget - ${DateFormat('MMMM yyyy').format(now)}";
 
     pdf.addPage(
       pw.MultiPage(
         build: (context) => [
           pw.Header(
             level: 0,
-            child: pw.Text("User Monthly Budget Report", style: pw.TextStyle(font: ttf, fontSize: 24)),
+            child: pw.Text(title, style: pw.TextStyle(font: ttf, fontSize: 24)),
           ),
-          if (startDate != null && endDate != null)
+          if (budgets.isNotEmpty &&
+              budgets.first.containsKey('startDate') &&
+              budgets.first['startDate'] is DateTime &&
+              budgets.first['endDate'] is DateTime)
             pw.Paragraph(
-              text: "Period: ${formatter.format(startDate)} to ${formatter.format(endDate)}",
+              text:
+              "Period: ${formatter.format(budgets.first['startDate'])} to ${formatter.format(budgets.first['endDate'])}",
               style: pw.TextStyle(font: ttf, fontSize: 14),
             ),
           pw.SizedBox(height: 10),
           pw.Table.fromTextArray(
-            headers: ['Budget', 'Used', 'Remaining', 'Advice'],
-            data: budgets.map((budget) {
+            headers: ['No.', 'Budget', 'Used', 'Remaining', 'Advice'],
+            data: List.generate(budgets.length, (index) {
+              final budget = budgets[index];
               final budgetAmount = (budget['budget'] ?? 0.0).toDouble();
               final used = (budget['used'] ?? 0.0).toDouble();
               final remaining = (budget['remaining'] ?? 0.0).toDouble();
@@ -80,16 +86,17 @@ class BudgetPdfGenerator {
               final advice = _getAdvice(used, budgetAmount, spendings);
 
               return [
+                (index + 1).toString(),
                 "${budgetAmount.toStringAsFixed(2)} RWF",
                 "${used.toStringAsFixed(2)} RWF",
                 "${remaining.toStringAsFixed(2)} RWF",
                 advice,
               ];
-            }).toList(),
+            }),
             cellStyle: pw.TextStyle(font: ttf),
             headerStyle: pw.TextStyle(font: ttf, fontWeight: pw.FontWeight.bold),
             columnWidths: {
-              3: const pw.FlexColumnWidth(4),
+              4: const pw.FlexColumnWidth(4),
             },
           ),
         ],
@@ -99,27 +106,20 @@ class BudgetPdfGenerator {
     return pdf;
   }
 
-String _getAdvice(double used, double budget, List<Map<String, dynamic>> spendings) {
-  if (budget == 0) return "No budget data";
+  String _getAdvice(double used, double budget, List<Map<String, dynamic>> spendings) {
+    if (budget == 0) return "No budget data";
 
-  double percent = (used / budget) * 100;
+    double percent = (used / budget) * 100;
 
-  if (percent <= 70) {
-    return "Safe Zone: Excellent! You are managing well. Consider saving or investing.";
-  } else if (percent <= 95) {
-    String biggest = expenseCtrl.getHighestSpendingCategory();
-    return "Warning Zone: Close to the limit. Watch spending on $biggest.";
-  } else {
-    String biggest = expenseCtrl.getHighestSpendingCategory();
-    return "Critical Zone: Overspending! Consider reducing $biggest or adjust your budget.";
-  }
-}
-
-
-  String _getTopSpendingCategory(List<Map<String, dynamic>> spendings) {
-    if (spendings.isEmpty) return "your categories";
-    spendings.sort((a, b) => (b['amount'] as double).compareTo(a['amount'] as double));
-    return spendings.first['categoryName'] ?? "unknown category";
+    if (percent <= 70) {
+      return "Safe Zone: Excellent! You are managing well. Consider saving or investing.";
+    } else if (percent <= 95) {
+      String biggest = expenseCtrl.getHighestSpendingCategory();
+      return "Warning Zone: Close to the limit. Watch spending on $biggest.";
+    } else {
+      String biggest = expenseCtrl.getHighestSpendingCategory();
+      return "Critical Zone: Overspending! Consider reducing $biggest or adjust your budget.";
+    }
   }
 
   Future<bool> _saveToDownloads(List<int> bytes) async {
@@ -145,11 +145,14 @@ String _getAdvice(double used, double budget, List<Map<String, dynamic>> spendin
   }
 
   Future<bool> _requestStoragePermission() async {
-    if (await Permission.manageExternalStorage.isGranted) return true;
-    if (await Permission.storage.isGranted) return true;
+    if (await Permission.manageExternalStorage.isGranted || await Permission.storage.isGranted) {
+      return true;
+    }
 
-    if (await Permission.manageExternalStorage.request().isGranted) return true;
-    if (await Permission.storage.request().isGranted) return true;
+    if (await Permission.manageExternalStorage.request().isGranted ||
+        await Permission.storage.request().isGranted) {
+      return true;
+    }
 
     _log("Permission Denied", "Storage permission is required to save the PDF.", isError: true);
     return false;

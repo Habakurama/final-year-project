@@ -649,6 +649,11 @@ class _UsersState extends State<Users> with TickerProviderStateMixin, WidgetsBin
         backgroundColor: Theme.of(context).brightness == Brightness.dark
             ? TColor.gray60
             : TColor.back,
+        iconTheme: IconThemeData(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? TColor.white
+              : TColor.gray60,
+        ),
         title: Row(
           children: [
             Text(

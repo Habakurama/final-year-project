@@ -1,6 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:untitled/common/color_extension.dart';
 import 'package:untitled/common_widget/primary_button.dart';
 import 'package:untitled/common_widget/rounded_textfield.dart';
 import 'package:untitled/controller/home_controller.dart';
@@ -168,7 +169,7 @@ class _AddIncomeViewState extends State<AddIncomeView> {
                 child: PrimaryButton(
                   title: _isLoading ? "Adding..." : "Add new income",
                   onPress: _isLoading ? () {} : handleSubmit,
-                  color: colorScheme.primary,
+                  color:TColor.white,
                   isLoading: _isLoading,
                 ),
               ),

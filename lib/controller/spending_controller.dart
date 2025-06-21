@@ -11,6 +11,7 @@ class SpendingController extends GetxController {
 
   final ExpenseController expenseController = Get.put(ExpenseController());
 
+
   late final CollectionReference spendingCollection =
       firestore.collection("spending");
   late final CollectionReference expenseCollection =
@@ -227,7 +228,9 @@ class SpendingController extends GetxController {
 
       await fetchUserSpendings();
       await fetchSpendingStats();
+      await expenseController.fetchExpenseStatusForCurrentMonth();
 
+      await expenseController.currentMonthExpenses();
       Get.snackbar("Success", "Spending updated successfully",
           colorText: TColor.line);
       return true;

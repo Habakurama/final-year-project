@@ -38,22 +38,15 @@ class HomeController extends GetxController{
 
   @override
  Future<void> onInit() async {
-  print("🚀 HomeController onInit() started");
+
   super.onInit();
 
-  print("📊 Starting calculateMonthlyIncome...");
   await calculateMonthlyIncome();
-  print("✅ calculateMonthlyIncome completed");
 
-  print("💰 Starting fetchIncome...");
   await fetchIncome();
-  print("✅ fetchIncome completed");
 
-  print("💵 Starting fetchTotalSavings...");
   await fetchTotalSavings();
-  print("✅ fetchTotalSavings completed");
 
-  print("🏁 HomeController onInit() finished");
 }
 
   Future<bool> addIncome() async {
@@ -67,6 +60,7 @@ class HomeController extends GetxController{
         amount: parsedAmount,
         date: DateTime.now(),
         userId: auth.currentUser!.uid,
+        shared: false,
       );
 
       final incomeJson = income.toJson();
@@ -100,7 +94,8 @@ class HomeController extends GetxController{
         id: incomeId,
         name: newName,
         amount: newAmount,
-        date: DateTime.now(), // Optionally keep original date if needed
+        date: DateTime.now(),
+
         userId: auth.currentUser!.uid,
       );
 
@@ -114,6 +109,43 @@ class HomeController extends GetxController{
     } catch (e) {
       Get.snackbar("Error", e.toString(), colorText: TColor.secondary);
       print(e);
+    }
+  }
+
+  // Add this method to your Home Controller
+
+  Future<void> updateAllIncomeShared(bool shared) async {
+    try {
+      final String userId = auth.currentUser!.uid;
+
+      // Get all income records for the current user
+      final incomeSnapshot = await incomeCollection
+          .where('userId', isEqualTo: userId)
+          .get();
+
+      if (incomeSnapshot.docs.isEmpty) {
+        print("No income records found for user");
+        return;
+      }
+
+      // Create a batch to update all income records at once
+      WriteBatch batch = FirebaseFirestore.instance.batch();
+
+      for (var doc in incomeSnapshot.docs) {
+        batch.update(doc.reference, {'shared': shared});
+      }
+
+      // Commit the batch
+      await batch.commit();
+
+      print("✅ Successfully updated ${incomeSnapshot.docs.length} income records shared field to $shared");
+
+      // Refresh the income data (replace with your actual refresh methods)
+      await fetchIncome();
+
+    } catch (e) {
+      print("❌ Error updating income shared field: $e");
+      throw e;
     }
   }
 

@@ -25,19 +25,28 @@ class IncomePdfGenerator {
     try {
       await homeCtrl.fetchIncome();
 
-      // Load custom font
       final fontData = await rootBundle.load("assets/font/Roboto-Regular.ttf");
       final ttf = pw.Font.ttf(fontData.buffer.asByteData());
 
       final pdf = pw.Document();
       final formatter = DateFormat('yyyy-MM-dd');
 
+      // Get dynamic title date
+      DateTime titleDate;
+      if (homeCtrl.income.isNotEmpty && homeCtrl.income[0].date != null) {
+        titleDate = homeCtrl.income[0].date!;
+      } else {
+        titleDate = DateTime.now();
+      }
+
+      final titleText = "Monthly Income - ${DateFormat('MMMM yyyy').format(titleDate)}";
+
       pdf.addPage(
         pw.MultiPage(
           build: (context) => [
             pw.Header(
               level: 0,
-              child: pw.Text("User Monthly Income Report", style: pw.TextStyle(font: ttf, fontSize: 24)),
+              child: pw.Text(titleText, style: pw.TextStyle(font: ttf, fontSize: 24)),
             ),
             pw.Table.fromTextArray(
               headers: ['Description', 'Amount', 'Date'],

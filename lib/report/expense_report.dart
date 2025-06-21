@@ -50,25 +50,33 @@ class ExpensePdfGenerator {
     final pdf = pw.Document();
     final formatter = DateFormat('yyyy-MM-dd');
 
+    // Set title from the first available record or fallback to current month
+    DateTime titleDate = DateTime.now();
+    if (expenseCtrl.currentMonthExpenses.isNotEmpty &&
+        expenseCtrl.currentMonthExpenses[0]['date'] != null &&
+        expenseCtrl.currentMonthExpenses[0]['date'] is DateTime) {
+      titleDate = expenseCtrl.currentMonthExpenses[0]['date'];
+    }
+
+    final String title = "Monthly Expense - ${DateFormat('MMMM yyyy').format(titleDate)}";
+
     pdf.addPage(
       pw.MultiPage(
         build: (context) => [
           pw.Header(
             level: 0,
-            child: pw.Text(
-              "User Monthly Expense Report",
-              style: pw.TextStyle(font: ttf, fontSize: 24),
-            ),
+            child: pw.Text(title, style: pw.TextStyle(font: ttf, fontSize: 24)),
           ),
           pw.Table.fromTextArray(
-            headers: ['ID', 'Category', 'Amount'],
-            data: expenseCtrl.currentMonthExpenses.map((expense) {
+            headers: ['No.', 'Category', 'Amount'],
+            data: List.generate(expenseCtrl.currentMonthExpenses.length, (index) {
+              final expense = expenseCtrl.currentMonthExpenses[index];
               return [
-                expense['id'] ?? '',
+                (index + 1).toString(),
                 expense['category'] ?? '',
                 "${expense['amount']} RWF",
               ];
-            }).toList(),
+            }),
             headerStyle: pw.TextStyle(font: ttf, fontWeight: pw.FontWeight.bold),
             cellStyle: pw.TextStyle(font: ttf),
           ),
@@ -102,15 +110,12 @@ class ExpensePdfGenerator {
   }
 
   Future<bool> _requestStoragePermission() async {
-    if (await Permission.manageExternalStorage.isGranted) {
+    if (await Permission.manageExternalStorage.isGranted || await Permission.storage.isGranted) {
       return true;
     }
 
-    if (await Permission.storage.isGranted) {
-      return true;
-    }
-
-    if (await Permission.manageExternalStorage.request().isGranted) {
+    if (await Permission.manageExternalStorage.request().isGranted ||
+        await Permission.storage.request().isGranted) {
       return true;
     }
 

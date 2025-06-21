@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:untitled/common/color_extension.dart';
 
+
 class ExpenseController extends GetxController {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   final FirebaseAuth auth = FirebaseAuth.instance;
+
 
   late final CollectionReference expenseCollection =
       firestore.collection("expense");
@@ -127,6 +129,7 @@ class ExpenseController extends GetxController {
         'remaining': amount, // Default: remaining = amount
         'used': 0.00,
         'date': Timestamp.now(),
+      'shared': false,
         'userId': userId,
         'createdAt': FieldValue.serverTimestamp(), // Add creation timestamp
       };
@@ -422,7 +425,8 @@ double _convertToDouble(dynamic value) {
         'category': newCategory.trim(),
         'amount': newAmount,
         'date':
-            DateTime.now(), // Optionally update date to now or keep original
+            DateTime.now(),
+
       });
 
       Get.snackbar("Success", "Expense updated successfully.",
@@ -434,6 +438,46 @@ double _convertToDouble(dynamic value) {
     } catch (e) {
       Get.snackbar("Error", e.toString(), colorText: TColor.secondary);
       print("Error updating expense: $e");
+    }
+  }
+
+
+
+  Future<void> updateAllExpensesShared(bool shared) async {
+    try {
+      final String userId = auth.currentUser!.uid;
+
+      // Get all expenses for the current user
+      final expensesSnapshot = await expenseCollection
+          .where('userId', isEqualTo: userId)
+          .get();
+
+      if (expensesSnapshot.docs.isEmpty) {
+        print("No expenses found for user");
+        return;
+      }
+
+
+      WriteBatch batch = FirebaseFirestore.instance.batch();
+
+      for (var doc in expensesSnapshot.docs) {
+        batch.update(doc.reference, {'shared': shared});
+      }
+
+      // Commit the batch
+      await batch.commit();
+
+      print("✅ Successfully updated ${expensesSnapshot.docs.length} expenses shared field to $shared");
+
+      // Refresh the expense data
+      await fetchCurrentMonthExpenses();
+      await fetchCategories();
+      await loadExpenseStatus();
+      await fetchCurrentMonthExpenseCategories();
+
+    } catch (e) {
+      print("❌ Error updating expenses shared field: $e");
+      throw e;
     }
   }
 

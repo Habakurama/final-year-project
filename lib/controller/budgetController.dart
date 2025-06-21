@@ -295,6 +295,7 @@ class BudgetController extends GetxController {
       }
 
       await budgetCollection.doc(id).update(updatedData);
+      await fetchBudgetStatus();
       
       // The real-time listener will automatically update the UI
       Get.snackbar("Success", "Budget updated successfully", colorText: TColor.line);
