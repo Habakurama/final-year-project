@@ -114,7 +114,7 @@ class _SpendingBudgetsViewState extends State<SpendingBudgetsView>
                         physics: const ClampingScrollPhysics(),
                         child: Column(
                           children: [
-                            BudgetHeader(),
+                            const BudgetHeader(),
                             BudgetArcSection(
                               controller: ctrl,
                               arcController: _arcController,

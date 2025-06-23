@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:collection/collection.dart';
 
 import 'package:untitled/controller/expense_controller.dart';
 import 'package:untitled/controller/spending_controller.dart';
@@ -80,7 +79,7 @@ class _UpdateExpenseState extends State<UpdateExpenseView> {
       return;
     }
 
-    if (spendingCtrl.selectedExpenseId == null || spendingCtrl.selectedExpenseId!.trim().isEmpty) {
+    if (spendingCtrl.selectedExpenseId.trim().isEmpty) {
       Get.snackbar("Error", "Please select a category", colorText: TColor.secondary);
       return;
     }
@@ -117,9 +116,9 @@ class _UpdateExpenseState extends State<UpdateExpenseView> {
         await spendingCtrl.fetchUserSpendings();
         
          Get.to(
-          () => HomeView(),
+          () => const HomeView(),
           transition: Transition.rightToLeft,
-          duration: Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 300),
         );
       } else {
         Get.snackbar("Error", "Failed to update spending - check your updateSpending method",

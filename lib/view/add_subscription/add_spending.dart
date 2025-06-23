@@ -238,7 +238,7 @@ class _AddSpendingViewState extends State<AddSpendingView> {
         savingAmount > selectedSavingCategoryAmount) {
       Get.snackbar(
         "Insufficient Savings",
-        "You tried to spend ${savingAmount} RWF but only ${selectedSavingCategoryAmount.toStringAsFixed(0)} RWF is available in savings.",
+        "You tried to spend $savingAmount RWF but only ${selectedSavingCategoryAmount.toStringAsFixed(0)} RWF is available in savings.",
         colorText: Theme.of(context).colorScheme.onError,
         backgroundColor: Theme.of(context).colorScheme.error,
         duration: const Duration(seconds: 4),

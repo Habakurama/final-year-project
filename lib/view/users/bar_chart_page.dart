@@ -25,7 +25,7 @@ class BarChartPage extends StatefulWidget {
   final String userId;
   final String? currentUserId;
 
-  BarChartPage({super.key, required this.userId, this.currentUserId});
+  const BarChartPage({super.key, required this.userId, this.currentUserId});
 
   @override
   State<BarChartPage> createState() => _BarChartPageState();
@@ -35,9 +35,12 @@ class _BarChartPageState extends State<BarChartPage> {
   List<IncomeModel> incomeData = [];
   List<ExpenseModel> expenseData = [];
   String userName = "User";
-  bool hasSharedData = false;
   bool isLoading = true;
   String? actualCurrentUserId;
+
+  // Track the actual data state
+  bool hasAnyData = false;
+  bool hasAnySharedData = false;
 
   @override
   void initState() {
@@ -98,42 +101,100 @@ class _BarChartPageState extends State<BarChartPage> {
           .where('userId', isEqualTo: widget.userId)
           .get();
 
+      // Debug: Print raw data
+      print('=== DEBUG: Raw Income Data ===');
+      for (var doc in incomeSnap.docs) {
+        print('Income Doc: ${doc.data()}');
+      }
+
+      print('=== DEBUG: Raw Expense Data ===');
+      for (var doc in expenseSnap.docs) {
+        print('Expense Doc: ${doc.data()}');
+      }
+
       List<IncomeModel> allIncomes = incomeSnap.docs.map((doc) {
         final data = doc.data();
+        final sharedValue = data['shared'];
+        print('Income shared field: $sharedValue (type: ${sharedValue.runtimeType})');
+
         return IncomeModel(
           name: data['name'] ?? 'Unknown',
           amount: double.tryParse(data['amount'].toString()) ?? 0,
-          shared: data['shared'] ?? false,
+          shared: _parseSharedField(sharedValue),
         );
       }).toList();
 
       List<ExpenseModel> allExpenses = expenseSnap.docs.map((doc) {
         final data = doc.data();
+        final sharedValue = data['shared'];
+        print('Expense shared field: $sharedValue (type: ${sharedValue.runtimeType})');
+
         return ExpenseModel(
           category: data['category'] ?? 'Unknown',
           amount: double.tryParse(data['amount'].toString()) ?? 0,
-          shared: data['shared'] ?? false,
+          shared: _parseSharedField(sharedValue),
         );
       }).toList();
 
+      // Debug: Print parsed data
+      print('=== DEBUG: Parsed Income Data ===');
+      for (var income in allIncomes) {
+        print('Income: ${income.name}, Amount: ${income.amount}, Shared: ${income.shared}');
+      }
+
+      print('=== DEBUG: Parsed Expense Data ===');
+      for (var expense in allExpenses) {
+        print('Expense: ${expense.category}, Amount: ${expense.amount}, Shared: ${expense.shared}');
+      }
+
+      // Check if there's any data at all
+      hasAnyData = allIncomes.isNotEmpty || allExpenses.isNotEmpty;
+
+      // Check if there's any shared data BEFORE filtering
+      hasAnySharedData = allIncomes.any((income) => income.shared) ||
+          allExpenses.any((expense) => expense.shared);
+
+      print('=== DEBUG: Data Status ===');
+      print('hasAnyData: $hasAnyData');
+      print('hasAnySharedData: $hasAnySharedData');
+      print('isCurrentUser: $isCurrentUser');
+
       setState(() {
         if (isCurrentUser) {
-          // Current user sees ALL their data
+          // Current user sees ALL their data (both shared and private)
           incomeData = allIncomes;
           expenseData = allExpenses;
-          hasSharedData = true; // Always true for current user viewing own data
+          print('Current user - showing all data. Income: ${incomeData.length}, Expense: ${expenseData.length}');
         } else {
           // Other users see only shared data
           incomeData = allIncomes.where((income) => income.shared).toList();
           expenseData = allExpenses.where((expense) => expense.shared).toList();
 
-          // Check if there's any shared data
-          hasSharedData = incomeData.isNotEmpty || expenseData.isNotEmpty;
+          print('Other user - showing shared data only. Income: ${incomeData.length}, Expense: ${expenseData.length}');
+          print('Filtered Income Data:');
+          for (var income in incomeData) {
+            print('  - ${income.name}: ${income.amount} (shared: ${income.shared})');
+          }
+          print('Filtered Expense Data:');
+          for (var expense in expenseData) {
+            print('  - ${expense.category}: ${expense.amount} (shared: ${expense.shared})');
+          }
         }
       });
     } catch (e) {
       print('Error loading chart data: $e');
     }
+  }
+
+  // Helper method to properly parse the shared field
+  bool _parseSharedField(dynamic sharedValue) {
+    if (sharedValue == null) return false;
+    if (sharedValue is bool) return sharedValue;
+    if (sharedValue is String) {
+      return sharedValue.toLowerCase() == 'true';
+    }
+    if (sharedValue is int) return sharedValue == 1;
+    return false;
   }
 
   Widget buildPrivacyMessage() {
@@ -553,8 +614,8 @@ class _BarChartPageState extends State<BarChartPage> {
                 Text(
                   isCurrentUser
                       ? "Your Financial Summary"
-                      : "$userName's Shared Financial Summary",
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      : "$userName's Shared Financial",
+                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -683,20 +744,20 @@ class _BarChartPageState extends State<BarChartPage> {
                         : Icons.trending_down,
                     color: accentColor,
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 4),
                   Text(
                     title,
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                   ),
                   if (title == "Combined Overview") ...[
                     const Spacer(),
                     Row(
                       children: [
                         Container(width: 12, height: 12, color: Colors.green),
-                        const Text(" Income", style: TextStyle(fontSize: 12)),
-                        const SizedBox(width: 10),
+                        const Text(" Income", style: TextStyle(fontSize: 8)),
+                        const SizedBox(width: 8),
                         Container(width: 12, height: 12, color: Colors.red),
-                        const Text(" Expenses", style: TextStyle(fontSize: 12)),
+                        const Text(" Expenses", style: TextStyle(fontSize: 8)),
                       ],
                     ),
                   ],
@@ -733,9 +794,7 @@ class _BarChartPageState extends State<BarChartPage> {
                 : TColor.gray60,
           ),
         ),
-
-
-      actions: [
+        actions: [
           IconButton(
             icon: Icon(
               Icons.message,
@@ -754,20 +813,54 @@ class _BarChartPageState extends State<BarChartPage> {
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : !isCurrentUser && !hasSharedData
-          ? buildPrivacyMessage() // Show privacy message when viewing others with no shared data
-          : (incomeData.isEmpty && expenseData.isEmpty)
-          ? buildNoDataMessage() // Show no data message when no data exists
-          : SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            buildSummaryCard(),
-            buildChartSection("Combined Overview", buildCombinedChart(), TColor.primary),
-            buildChartSection("Income Analysis", buildIncomeChart(), Colors.green),
-            buildChartSection("Expense Analysis", buildExpenseChart(), Colors.red),
-          ],
-        ),
+          : _buildBodyContent(),
+    );
+  }
+
+  Widget _buildBodyContent() {
+    print('=== DEBUG: _buildBodyContent ===');
+    print('isCurrentUser: $isCurrentUser');
+    print('hasAnyData: $hasAnyData');
+    print('hasAnySharedData: $hasAnySharedData');
+    print('incomeData.length: ${incomeData.length}');
+    print('expenseData.length: ${expenseData.length}');
+
+    // For current user viewing their own data
+    if (isCurrentUser) {
+      if (!hasAnyData) {
+        return buildNoDataMessage(); // Show no data message
+      } else {
+        return _buildChartsView(); // Show charts with all their data
+      }
+    }
+
+    // For viewing someone else's data
+    else {
+      // If they have no data at all
+      if (!hasAnyData) {
+        return buildNoDataMessage();
+      }
+      // If they have data but none is shared
+      else if (!hasAnySharedData) {
+        return buildPrivacyMessage();
+      }
+      // If they have shared data to display
+      else {
+        return _buildChartsView();
+      }
+    }
+  }
+
+  Widget _buildChartsView() {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          buildSummaryCard(),
+          buildChartSection("Combined Overview", buildCombinedChart(), TColor.primary),
+          buildChartSection("Income Analysis", buildIncomeChart(), Colors.green),
+          buildChartSection("Expense Analysis", buildExpenseChart(), Colors.red),
+        ],
       ),
     );
   }

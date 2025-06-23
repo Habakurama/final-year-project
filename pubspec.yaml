@@ -59,6 +59,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_launcher_icons: ^0.13.1
   
+  vector_math: any
 flutter_icons:
   android: true
   ios: true

@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:untitled/common/color_extension.dart';
-import 'package:untitled/common_widget/primary_button.dart';
-import 'package:untitled/common_widget/secondary_button.dart';
 import 'package:untitled/view/login/sign_in_view.dart';
 import 'package:untitled/view/login/sign_up_view.dart';
 
@@ -121,7 +118,7 @@ class _WelcomeViewState extends State<WelcomeView> with TickerProviderStateMixin
                                 ),
                               ],
                             ),
-                            child: Icon(
+                            child: const Icon(
                               Icons.account_balance_wallet_rounded,
                               size: 40,
                               color: Colors.white,
@@ -263,7 +260,7 @@ class _WelcomeViewState extends State<WelcomeView> with TickerProviderStateMixin
                                   borderRadius: BorderRadius.circular(16),
                                 ),
                               ),
-                              child: Row(
+                              child: const Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
@@ -274,7 +271,7 @@ class _WelcomeViewState extends State<WelcomeView> with TickerProviderStateMixin
                                       letterSpacing: 0.5,
                                     ),
                                   ),
-                                  const SizedBox(width: 8),
+                                  SizedBox(width: 8),
                                   Icon(Icons.arrow_forward_rounded),
                                 ],
                               ),
@@ -301,11 +298,11 @@ class _WelcomeViewState extends State<WelcomeView> with TickerProviderStateMixin
                                   borderRadius: BorderRadius.circular(16),
                                 ),
                               ),
-                              child: Row(
+                              child: const Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Icon(Icons.login_rounded, size: 20),
-                                  const SizedBox(width: 8),
+                                  SizedBox(width: 8),
                                   Text(
                                     'I have an Account',
                                     style: TextStyle(

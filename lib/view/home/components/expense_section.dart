@@ -132,7 +132,7 @@ class _ExpenseSectionState extends State<ExpenseSection> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          showAll ? 'View Less' : 'View All (${totalExpenses})',
+                          showAll ? 'View Less' : 'View All ($totalExpenses)',
                           style: TextStyle(
                             color: primaryColor,
                             fontSize: 14,
@@ -156,7 +156,7 @@ class _ExpenseSectionState extends State<ExpenseSection> {
               Padding(
                 padding: const EdgeInsets.only(top: 8),
                 child: Text(
-                  'Showing ${displayCount} of ${totalExpenses} expenses',
+                  'Showing $displayCount of $totalExpenses expenses',
                   style: TextStyle(
                     color: grayColor,
                     fontSize: 12,

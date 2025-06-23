@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -115,7 +114,7 @@ class BudgetPdfGenerator {
       return "Safe Zone: Excellent! You are managing well. Consider saving or investing.";
     } else if (percent <= 95) {
       String biggest = expenseCtrl.getHighestSpendingCategory();
-      return "Warning Zone: Close to the limit. Watch spending on $biggest.";
+      return "Warning Zone: Close to the limit. Watch spending on $biggest. then take decision for next month";
     } else {
       String biggest = expenseCtrl.getHighestSpendingCategory();
       return "Critical Zone: Overspending! Consider reducing $biggest or adjust your budget.";

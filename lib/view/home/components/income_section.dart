@@ -37,7 +37,7 @@ class IncomeSection extends StatelessWidget {
         child: Column(
           children: [
             Container(
-              height: 300,
+              height: 350,
               margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
                 color: cardBackground,

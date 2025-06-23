@@ -145,7 +145,7 @@ class HomeController extends GetxController{
 
     } catch (e) {
       print("❌ Error updating income shared field: $e");
-      throw e;
+      rethrow;
     }
   }
 
@@ -154,7 +154,7 @@ class HomeController extends GetxController{
     try {
       DateTime now = DateTime.now();
       DateTime startOfMonth = DateTime(now.year, now.month, 1);
-      DateTime endOfMonth = DateTime(now.year, now.month + 1, 1).subtract(Duration(milliseconds: 1));
+      DateTime endOfMonth = DateTime(now.year, now.month + 1, 1).subtract(const Duration(milliseconds: 1));
 
       QuerySnapshot querySnapshot = await incomeCollection
           .where("userId", isEqualTo: auth.currentUser!.uid)
@@ -168,7 +168,7 @@ class HomeController extends GetxController{
       }
 
       totalIncome.value = totalIncomeAmount; // update the reactive variable
-      print("print total income amount, ${totalIncomeAmount}");
+      print("print total income amount, $totalIncomeAmount");
     } catch (e) {
       print("Error calculating monthly income: $e");
       totalIncome.value = 0.0; // fallback to 0 if there's an error

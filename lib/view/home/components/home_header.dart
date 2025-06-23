@@ -44,7 +44,6 @@ class _HomeHeaderState extends State<HomeHeader> {
       final currentUser = auth.currentUser;
 
       if (currentUser == null) {
-        ;
         totalSavings.value = 0.0;
         return;
       }
@@ -133,7 +132,7 @@ class _HomeHeaderState extends State<HomeHeader> {
               _buildMonthlyStats(
                   context, textColor, grayColor, cardBackground, primaryColor),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
 
               // Statistics Cards
               _buildStatisticsCards(
@@ -160,7 +159,7 @@ class _HomeHeaderState extends State<HomeHeader> {
                 style: TextStyle(
                   color: textColor.withOpacity(0.8),
                   fontSize: 16,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),
@@ -171,7 +170,7 @@ class _HomeHeaderState extends State<HomeHeader> {
                 "Financial Overview",
                 style: TextStyle(
                   color: textColor,
-                  fontSize: 22,
+                  fontSize: 20,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -232,7 +231,7 @@ class _HomeHeaderState extends State<HomeHeader> {
                       "${widget.spendingController.totalAmountSpending.value.toStringAsFixed(2)} Frw",
                       style: TextStyle(
                         color: textColor,
-                        fontSize: 24,
+                        fontSize: 16,
                         fontWeight: FontWeight.w800,
                         letterSpacing: -0.5,
                       ),
@@ -242,7 +241,7 @@ class _HomeHeaderState extends State<HomeHeader> {
                   "Monthly Expenses",
                   style: TextStyle(
                     color: grayColor,
-                    fontSize: 13,
+                    fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -268,7 +267,7 @@ class _HomeHeaderState extends State<HomeHeader> {
                       "${widget.homeController.totalIncome.value.toStringAsFixed(0)} Frw",
                       style: TextStyle(
                         color:textColor,
-                        fontSize: 24,
+                        fontSize: 16,
                         fontWeight: FontWeight.w800,
                         letterSpacing: -0.5,
                       ),
@@ -278,7 +277,7 @@ class _HomeHeaderState extends State<HomeHeader> {
                   "Monthly Income",
                   style: TextStyle(
                     color: grayColor,
-                    fontSize: 13,
+                    fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -286,11 +285,11 @@ class _HomeHeaderState extends State<HomeHeader> {
             ),
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: 15),
 
           // Total Savings - Now using local totalSavings variable
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
             decoration: BoxDecoration(
               color: cardBackground.withOpacity(0.8),
               borderRadius: BorderRadius.circular(16),
@@ -308,7 +307,7 @@ class _HomeHeaderState extends State<HomeHeader> {
                           "${totalSavings.value.toStringAsFixed(2)} Frw",
                           style: const TextStyle(
                             color: Colors.green,
-                            fontSize: 24,
+                            fontSize: 16,
                             fontWeight: FontWeight.w800,
                             letterSpacing: -0.5,
                           ),
@@ -360,7 +359,7 @@ class _HomeHeaderState extends State<HomeHeader> {
           Obx(() => StatCard(
                 title: "Lowest expense",
                 value:
-                    "${widget.spendingController.lowestSpending.value.toStringAsFixed(0)}",
+                    widget.spendingController.lowestSpending.value.toStringAsFixed(0),
                 icon: Icons.trending_down_outlined,
                 cardBackground: cardBackground,
                 textColor: textColor,
@@ -371,7 +370,7 @@ class _HomeHeaderState extends State<HomeHeader> {
           Obx(() => StatCard(
                 title: "Highest expense",
                 value:
-                    "${widget.spendingController.highestSpending.value.toStringAsFixed(0)}",
+                    widget.spendingController.highestSpending.value.toStringAsFixed(0),
                 icon: Icons.trending_up_outlined,
                 cardBackground: cardBackground,
                 textColor: textColor,

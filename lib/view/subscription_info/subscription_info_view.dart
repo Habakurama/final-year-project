@@ -179,7 +179,7 @@ class _SubscriptionInfoViewState extends State<SubscriptionInfoView> {
                     strokeWidth: 1,
                     radius: const Radius.circular(16),
                     color: TColor.gray,
-                    child: SizedBox(
+                    child: const SizedBox(
                       height: 0,
                     ),
                   )),

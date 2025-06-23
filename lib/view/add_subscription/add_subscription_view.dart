@@ -59,8 +59,8 @@ class _AddSubScriptionViewState extends State<AddSubScriptionView> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Select Category'),
-          content: Container(
+          title: const Text('Select Category'),
+          content: SizedBox(
             width: double.maxFinite,
             child: ListView.builder(
               shrinkWrap: true,
@@ -90,7 +90,7 @@ class _AddSubScriptionViewState extends State<AddSubScriptionView> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
           ],
         );
@@ -131,7 +131,7 @@ class _AddSubScriptionViewState extends State<AddSubScriptionView> {
       colorText: Theme.of(context).colorScheme.error,
       backgroundColor: Theme.of(context).colorScheme.errorContainer,
       snackPosition: SnackPosition.TOP,
-      duration: Duration(seconds: 3),
+      duration: const Duration(seconds: 3),
     );
   }
 
@@ -142,7 +142,7 @@ class _AddSubScriptionViewState extends State<AddSubScriptionView> {
       colorText: Theme.of(context).colorScheme.primary,
       backgroundColor: Theme.of(context).colorScheme.primaryContainer,
       snackPosition: SnackPosition.TOP,
-      duration: Duration(seconds: 2),
+      duration: const Duration(seconds: 2),
     );
   }
 
@@ -181,7 +181,7 @@ class _AddSubScriptionViewState extends State<AddSubScriptionView> {
         Get.to(
           () => const SpendingBudgetsView(),
           transition: Transition.rightToLeft,
-          duration: Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 300),
         );
       } else {
         _showErrorSnackbar("Failed to add transaction. Please try again.");
@@ -209,7 +209,7 @@ class _AddSubScriptionViewState extends State<AddSubScriptionView> {
             ),
             ElevatedButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: Text('Confirm'),
+              child: const Text('Confirm'),
             ),
           ],
         );
@@ -254,7 +254,7 @@ class _AddSubScriptionViewState extends State<AddSubScriptionView> {
                     BoxShadow(
                       color: Colors.black.withOpacity(0.1),
                       blurRadius: 10,
-                      offset: Offset(0, 2),
+                      offset: const Offset(0, 2),
                     ),
                   ],
                 ),
@@ -321,7 +321,7 @@ class _AddSubScriptionViewState extends State<AddSubScriptionView> {
                             return GestureDetector(
                               onTap: () => _onCategorySelected(index, sObj["name"]!),
                               child: AnimatedContainer(
-                                duration: Duration(milliseconds: 300),
+                                duration: const Duration(milliseconds: 300),
                                 margin: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(20),
@@ -365,7 +365,7 @@ class _AddSubScriptionViewState extends State<AddSubScriptionView> {
                                     ),
                                     if (isSelected)
                                       Container(
-                                        margin: EdgeInsets.only(top: 4),
+                                        margin: const EdgeInsets.only(top: 4),
                                         height: 2,
                                         width: 20,
                                         decoration: BoxDecoration(
@@ -400,7 +400,7 @@ class _AddSubScriptionViewState extends State<AddSubScriptionView> {
                     BoxShadow(
                       color: Colors.black.withOpacity(0.05),
                       blurRadius: 8,
-                      offset: Offset(0, 2),
+                      offset: const Offset(0, 2),
                     ),
                   ],
                 ),
@@ -483,7 +483,7 @@ class _AddSubScriptionViewState extends State<AddSubScriptionView> {
                   title: "Amount (Rwf)",
                   titleAlign: TextAlign.center,
                   controller: expenseCtrl.amountCtrl,
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 ),
               ),
 

@@ -94,8 +94,8 @@ class ExpenseBarChart extends StatelessWidget {
                               reservedSize: 60,
                             ),
                           ),
-                          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                         ),
                         gridData: FlGridData(
                           show: true,
@@ -129,7 +129,7 @@ class ExpenseBarChart extends StatelessWidget {
                                       backgroundColor: Colors.transparent,  // Transparent background
                                       elevation: 0,  // Remove shadow
                                       contentPadding: EdgeInsets.zero,
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                                      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
                   // Remove default padding
                                       content: Column(
                                         mainAxisSize: MainAxisSize.min,
@@ -143,7 +143,7 @@ class ExpenseBarChart extends StatelessWidget {
                                                   spending['name'],
                                                   style: TextStyle(color: TColor.gray80),
                                                 ),
-                                                SizedBox(width: 8,),
+                                                const SizedBox(width: 8,),
                                                 Text(
                                                   "RWF ${spending['amount']}",
                                                   style: TextStyle(color: TColor.gray80),

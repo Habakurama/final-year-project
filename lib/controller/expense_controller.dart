@@ -477,7 +477,7 @@ double _convertToDouble(dynamic value) {
 
     } catch (e) {
       print("❌ Error updating expenses shared field: $e");
-      throw e;
+      rethrow;
     }
   }
 
@@ -588,10 +588,8 @@ double _convertToDouble(dynamic value) {
 
       // Copy all existing fields, converting everything to String
       targetCategory.forEach((key, value) {
-        if (value != null) {
-          updatedCategory[key] = value.toString();
-        }
-      });
+        updatedCategory[key] = value.toString();
+            });
 
       // Update the specific fields with new calculated values (as Strings)
       updatedCategory['remaining'] = newRemaining.toString();
@@ -606,7 +604,7 @@ double _convertToDouble(dynamic value) {
       }
 
       return true;
-    } catch (e, stackTrace) {
+    } catch (e) {
       if (e is FirebaseException) {
         // Handle Firebase-specific errors if needed
       }

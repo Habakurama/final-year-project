@@ -40,9 +40,8 @@ class SavingsCategoryDropdown extends StatelessWidget {
 
         // Filter out excluded categoryIds and ensure categoryId is not null
         final List<SavingModel> availableSavings = allSavings.where((saving) {
-          final categoryId = saving.categoryId?.trim();
-          return categoryId != null && 
-                 categoryId.isNotEmpty && 
+          final categoryId = saving.categoryId.trim();
+          return categoryId.isNotEmpty && 
                  !excludedCategoryIds.contains(categoryId);
         }).toList();
 
@@ -52,7 +51,7 @@ class SavingsCategoryDropdown extends StatelessWidget {
         String? dropdownValue;
         if (selectedSavingCategoryId != null && selectedSavingCategoryId!.isNotEmpty) {
           final selectedExists = availableSavings.any(
-            (s) => s.categoryId?.trim() == selectedSavingCategoryId?.trim(),
+            (s) => s.categoryId.trim() == selectedSavingCategoryId?.trim(),
           );
           dropdownValue = selectedExists ? selectedSavingCategoryId : null;
         }
@@ -70,10 +69,10 @@ class SavingsCategoryDropdown extends StatelessWidget {
 
         // Create dropdown items with null safety
         final List<DropdownMenuItem<String>> dropdownItems = availableSavings
-            .where((saving) => saving.categoryId != null && saving.categoryId!.isNotEmpty)
+            .where((saving) => saving.categoryId.isNotEmpty)
             .map((saving) {
           return DropdownMenuItem<String>(
-            value: saving.categoryId!,
+            value: saving.categoryId,
             child: Text(
               "${saving.categoryName ?? 'Unnamed'} - ${saving.amount.toStringAsFixed(0)} RWF",
             ),

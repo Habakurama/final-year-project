@@ -40,8 +40,8 @@ class CustomArcPainter extends CustomPainter {
     const safeLimit = 0.50;    // 50% - Green zone
     const warningLimit = 0.75; // 75% - Yellow zone
     
-    final safeDegrees = 180 * safeLimit;
-    final warningDegrees = 180 * warningLimit;
+    const safeDegrees = 180 * safeLimit;
+    const warningDegrees = 180 * warningLimit;
 
     double startAngle = vm.radians(180); // Starting from 180°
 

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:untitled/common/color_extension.dart';
 import 'package:untitled/common_widget/primary_button.dart';
 import 'package:untitled/common_widget/secondary_button.dart';
-import 'package:untitled/common_widget/snack_bar.dart';
 import 'package:untitled/service/AuthenticationService.dart';
 import 'package:untitled/view/login/sign_in_view.dart';
 

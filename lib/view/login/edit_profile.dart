@@ -54,7 +54,7 @@ class _EditProfileViewState extends State<EditProfileView> {
 
 
       final updatedUser = await authService.getCurrentUserData();
-      print("updated user, ${updatedUser}");
+      print("updated user, $updatedUser");
       Get.snackbar("Success", "Profile updated successfully", colorText: TColor.line);
       Get.to(()=> const MainTabView());
     } else {

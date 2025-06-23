@@ -72,11 +72,11 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                   cardBackground: cardBackground,
                 ),
 
-                const SizedBox(height: 24),
+                const SizedBox(height: 30),
 
                 // Content Section
                 Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  margin: const EdgeInsets.symmetric(horizontal: 15),
                   child: Column(
                     mainAxisSize: MainAxisSize.min, // Added mainAxisSize
                     children: [

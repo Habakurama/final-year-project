@@ -6,7 +6,7 @@ import 'package:untitled/model/message/chart_model.dart';
 class ChatPage extends StatefulWidget {
   final String userId; // financial insight user's ID
 
-  const ChatPage(this.userId, {Key? key}) : super(key: key);
+  const ChatPage(this.userId, {super.key});
 
   @override
   _ChatPageState createState() => _ChatPageState();
@@ -19,11 +19,35 @@ class _ChatPageState extends State<ChatPage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   late final String currentUserId;
+  String? receiverName;
+
+
+  Future<void> _fetchReceiverName() async {
+    try {
+      final doc = await _firestore.collection('users').doc(widget.userId).get();
+      if (doc.exists) {
+        setState(() {
+          receiverName = doc['name'] ?? 'Unknown';
+        });
+      } else {
+        setState(() {
+          receiverName = 'Unknown';
+        });
+      }
+    } catch (e) {
+      print('Error fetching user: $e');
+      setState(() {
+        receiverName = 'Unknown';
+      });
+    }
+  }
+
 
   @override
   void initState() {
     super.initState();
     currentUserId = _auth.currentUser!.uid;
+    _fetchReceiverName(); // Fetch receiver's name on load
   }
 
   @override
@@ -214,7 +238,7 @@ class _ChatPageState extends State<ChatPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Chat with ${widget.userId}',
+                    'Chat with ${receiverName}',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,

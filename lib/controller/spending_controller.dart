@@ -122,8 +122,9 @@ class SpendingController extends GetxController {
       final double amountParsed = double.tryParse(subAmount.toString()) ?? 0.0;
       final String nameParsed = subName.toString();
 
-      if (amountParsed <= 0 || nameParsed.isEmpty || selectedExpenseId.isEmpty)
+      if (amountParsed <= 0 || nameParsed.isEmpty || selectedExpenseId.isEmpty) {
         return false;
+      }
 
       final expenseDoc = await expenseCollection.doc(selectedExpenseId).get();
       final expenseData = expenseDoc.data()! as Map<String, dynamic>;
@@ -185,8 +186,9 @@ class SpendingController extends GetxController {
       final double amountParsed = double.tryParse(subAmount.toString()) ?? 0.0;
       final String nameParsed = subName.toString();
 
-      if (amountParsed <= 0 || nameParsed.isEmpty || selectedExpenseId.isEmpty)
+      if (amountParsed <= 0 || nameParsed.isEmpty || selectedExpenseId.isEmpty) {
         return false;
+      }
 
       final expenseDoc = await expenseCollection.doc(selectedExpenseId).get();
       final expenseData = expenseDoc.data()! as Map<String, dynamic>;
@@ -230,7 +232,7 @@ class SpendingController extends GetxController {
       await fetchSpendingStats();
       await expenseController.fetchExpenseStatusForCurrentMonth();
 
-      await expenseController.currentMonthExpenses();
+      expenseController.currentMonthExpenses();
       Get.snackbar("Success", "Spending updated successfully",
           colorText: TColor.line);
       return true;

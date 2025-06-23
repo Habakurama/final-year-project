@@ -12,7 +12,6 @@ import 'package:untitled/controller/home_controller.dart';
 import 'package:untitled/controller/expense_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../common_widget/icon_item_row.dart';
 import '../../report/budget_report.dart';
 
 class SettingsView extends StatefulWidget {
@@ -121,7 +120,7 @@ class _SettingsViewState extends State<SettingsView> {
           "Unable to initialize controllers. Please restart the app.",
           colorText: Colors.white,
           backgroundColor: Colors.red.withOpacity(0.8),
-          duration: Duration(seconds: 3),
+          duration: const Duration(seconds: 3),
           snackPosition: SnackPosition.BOTTOM,
         );
         return;
@@ -141,7 +140,7 @@ class _SettingsViewState extends State<SettingsView> {
               CircularProgressIndicator(
                 color: Theme.of(context).primaryColor,
               ),
-              SizedBox(width: 16),
+              const SizedBox(width: 16),
               Text(
                 value ? "Enabling shared mode..." : "Disabling shared mode...",
                 style: TextStyle(
@@ -177,7 +176,7 @@ class _SettingsViewState extends State<SettingsView> {
             : "All income and expenses are now private",
         colorText: Colors.white,
         backgroundColor: Colors.green.withOpacity(0.8),
-        duration: Duration(seconds: 3),
+        duration: const Duration(seconds: 3),
         snackPosition: SnackPosition.BOTTOM,
       );
 
@@ -200,7 +199,7 @@ class _SettingsViewState extends State<SettingsView> {
         "Failed to update shared status: ${e.toString()}",
         colorText: Colors.white,
         backgroundColor: Colors.red.withOpacity(0.8),
-        duration: Duration(seconds: 4),
+        duration: const Duration(seconds: 4),
         snackPosition: SnackPosition.BOTTOM,
       );
 
@@ -392,7 +391,7 @@ class _SettingsViewState extends State<SettingsView> {
                             color: Colors.white,
                             size: 16,
                           ),
-                          const SizedBox(width: 8),
+                          SizedBox(width: 8),
                           Text(
                             "Edit Profile",
                             style: TextStyle(
@@ -684,14 +683,14 @@ class _SettingsViewState extends State<SettingsView> {
                                   color: Colors.red.withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: Icon(
+                                child: const Icon(
                                   Icons.logout,
                                   color: Colors.red,
                                   size: 20,
                                 ),
                               ),
                               const SizedBox(width: 16),
-                              Text(
+                              const Text(
                                 "Logout",
                                 style: TextStyle(
                                   color: Colors.red,

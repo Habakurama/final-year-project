@@ -1,5 +1,4 @@
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../common/color_extension.dart';
@@ -10,11 +9,11 @@ class IconItemRow extends StatelessWidget {
   final VoidCallback? onTap;
 
   const IconItemRow({
-    Key? key,
+    super.key,
     required this.title,
     required this.value,
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -62,7 +62,7 @@ class _UpdateIncomeViewState extends State<UpdateIncomeView> {
          Get.to(
           () => const HomeView(),
           transition: Transition.rightToLeft,
-          duration: Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 300),
         );
 
     setState(() {
