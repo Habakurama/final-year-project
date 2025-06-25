@@ -45,8 +45,7 @@ class _AddIncomeViewState extends State<AddIncomeView> {
     setState(() => _isLoading = false);
 
     if (addIncome) {
-      Get.snackbar("Success", "Transaction added successfully",
-          colorText: Theme.of(context).colorScheme.primary);
+
       Get.to(() => const MainTabView());
     }
 

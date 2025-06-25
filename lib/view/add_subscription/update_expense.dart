@@ -108,9 +108,9 @@ class _UpdateExpenseState extends State<UpdateExpenseView> {
       print("DEBUG: Update result: $success");
       
       if (success) {
-        Get.snackbar("Success", "Spending updated successfully", 
-            colorText: TColor.secondary,
-            backgroundColor: Colors.green.withOpacity(0.8));
+        // Get.snackbar("Success", "Spending updated successfully",
+        //     colorText: TColor.secondary,
+        //     backgroundColor: Colors.green.withOpacity(0.8));
         
         // Refresh the spending list
         await spendingCtrl.fetchUserSpendings();
@@ -148,18 +148,18 @@ class _UpdateExpenseState extends State<UpdateExpenseView> {
         child: Column(
           children: [
             // Debug info (remove in production)
-            Container(
-              padding: const EdgeInsets.all(8),
-              margin: const EdgeInsets.only(bottom: 10),
-              decoration: BoxDecoration(
-                color: Colors.yellow.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: Text(
-                "DEBUG: ID=${widget.id}, SelectedCategory=$selectedCategory, SelectedExpenseId=${spendingCtrl.selectedExpenseId}",
-                style: const TextStyle(fontSize: 12),
-              ),
-            ),
+            // Container(
+            //   padding: const EdgeInsets.all(8),
+            //   margin: const EdgeInsets.only(bottom: 10),
+            //   decoration: BoxDecoration(
+            //     color: Colors.yellow.withOpacity(0.3),
+            //     borderRadius: BorderRadius.circular(5),
+            //   ),
+            //   child: Text(
+            //     "DEBUG: ID=${widget.id}, SelectedCategory=$selectedCategory, SelectedExpenseId=${spendingCtrl.selectedExpenseId}",
+            //     style: const TextStyle(fontSize: 12),
+            //   ),
+            // ),
 
             // Category Dropdown
             Obx(() {

@@ -167,7 +167,7 @@ class _AddSubScriptionViewState extends State<AddSubScriptionView> {
       final addExpense = await expenseCtrl.addExpense();
 
       if (addExpense) {
-        _showSuccessSnackbar("Transaction added successfully");
+        // _showSuccessSnackbar("Transaction added successfully");
         
         // Clear form
         expenseCtrl.categoryCtrl.clear();

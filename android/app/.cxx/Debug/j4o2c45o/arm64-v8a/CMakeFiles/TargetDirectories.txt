@@ -1,0 +1,2 @@
+D:/Final year project updated/final-year-project/android/app/.cxx/Debug/j4o2c45o/arm64-v8a/CMakeFiles/edit_cache.dir
+D:/Final year project updated/final-year-project/android/app/.cxx/Debug/j4o2c45o/arm64-v8a/CMakeFiles/rebuild_cache.dir

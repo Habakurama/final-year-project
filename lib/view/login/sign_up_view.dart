@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:untitled/common/color_extension.dart';
 import 'package:untitled/common_widget/primary_button.dart';
 import 'package:untitled/common_widget/secondary_button.dart';
 import 'package:untitled/service/AuthenticationService.dart';
@@ -154,7 +155,7 @@ class _SignUpViewState extends State<SignUpView> {
                           PrimaryButton(
                             title: "Sign Up",
                             onPress: signUpUser,
-                            color: theme.primaryColor,
+                            color: TColor.white,
                           ),
 
                           const SizedBox(height: 30),
@@ -175,7 +176,7 @@ class _SignUpViewState extends State<SignUpView> {
                                   onPress: () {
                                     Get.to(() => const SignInView());
                                   },
-                                  color: theme.primaryColor,
+                                  color: TColor.line,
                                 ),
                               ],
                             ),
