@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:untitled/model/expense/expense.dart';
 import 'package:untitled/model/income/income.dart';
+import 'package:untitled/model/static-saving/static-saving.dart';
 
 import '../common/color_extension.dart';
 
@@ -30,6 +31,8 @@ class HomeController extends GetxController{
   List<Expense> expense = [];
 
   RxList<Income> income = <Income>[].obs;
+  final RxDouble totalStaticSavings = 0.0.obs;
+  final RxList<StaticSaving> staticSavingsList = <StaticSaving>[].obs;
 
   void updateAmount(double newVal) {
     amountVal = newVal;
@@ -111,6 +114,148 @@ class HomeController extends GetxController{
       print(e);
     }
   }
+
+  Future<void> updateIncomeAmountByUserId({
+    required String userId,
+    required double newAmount,
+  }) async {
+    try {
+
+      QuerySnapshot snapshot = await incomeCollection
+          .where('userId', isEqualTo: userId)
+          .get();
+
+
+      if (snapshot.docs.isEmpty) {
+        Get.snackbar("Not Found", "No income found for this user", colorText: TColor.secondary);
+        return;
+      }
+
+      double staticSavingsAmount = newAmount * 0.05; // 5% of income
+      double remainingAmount = newAmount - staticSavingsAmount; // 95% remaining
+
+      // Create StaticSaving object
+      StaticSaving newStaticSaving = StaticSaving(
+        userId: userId,
+        amount: staticSavingsAmount,
+        date: DateTime.now(),
+        originalIncomeAmount: newAmount,
+        createdAt: DateTime.now(),
+      );
+
+      // Save to static savings collection using the model
+      await _addStaticSaving(newStaticSaving);
+
+      // Loop through and update each income document with remaining amount
+      for (var doc in snapshot.docs) {
+        await incomeCollection.doc(doc.id).update({
+          'amount': remainingAmount,
+          'date': DateTime.now(),
+          'originalAmount': newAmount,
+          'staticSavingsDeducted': staticSavingsAmount,
+        });
+      }
+
+      Get.snackbar(
+          "Success",
+          "Income updated! Static savings: ${newStaticSaving.formattedAmount} (${newStaticSaving.formattedPercentage}), Available: ${remainingAmount.toStringAsFixed(2)} Frw",
+          colorText: TColor.line,
+          duration: const Duration(seconds: 4)
+      );
+
+      await fetchIncome(); // Refresh income list
+      await fetchStaticSavings(); // Refresh static savings
+
+    } catch (e) {
+      Get.snackbar("Error", e.toString(), colorText: TColor.secondary);
+      print(e);
+    }
+  }
+
+// Helper method to add StaticSaving to Firestore
+  Future<void> _addStaticSaving(StaticSaving staticSaving) async {
+    try {
+      DocumentReference docRef = await FirebaseFirestore.instance
+          .collection('static_savings')
+          .add(staticSaving.toMap());
+
+      // Update the staticSaving with the generated ID
+      staticSaving = staticSaving.copyWith(id: docRef.id);
+
+      // Add to local list
+      staticSavingsList.add(staticSaving);
+
+      // Update total
+      totalStaticSavings.value += staticSaving.amount;
+
+    } catch (e) {
+      print('Error adding static saving: $e');
+      rethrow;
+    }
+  }
+
+// Method to fetch all static savings
+  Future<void> fetchStaticSavings() async {
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        staticSavingsList.clear();
+        totalStaticSavings.value = 0.0;
+        return;
+      }
+
+      String userId = currentUser.uid;
+
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('static_savings')
+          .where('userId', isEqualTo: userId)
+          .orderBy('date', descending: true)
+          .get();
+
+      List<StaticSaving> savings = [];
+      double total = 0.0;
+
+      for (QueryDocumentSnapshot doc in snapshot.docs) {
+        try {
+          StaticSaving staticSaving = StaticSaving.fromFirestore(doc);
+          savings.add(staticSaving);
+          total += staticSaving.amount;
+        } catch (e) {
+          print('Error parsing static saving: $e');
+          continue;
+        }
+      }
+
+      staticSavingsList.value = savings;
+      totalStaticSavings.value = total;
+
+    } catch (e) {
+      print('Error fetching static savings: $e');
+      staticSavingsList.clear();
+      totalStaticSavings.value = 0.0;
+    }
+  }
+
+// Method to get static savings for current month
+  List<StaticSaving> get currentMonthStaticSavings {
+    return staticSavingsList.where((saving) => saving.isThisMonth).toList();
+  }
+
+// Method to get total static savings for current month
+  double get currentMonthStaticSavingsTotal {
+    return currentMonthStaticSavings.fold(0.0, (sum, saving) => sum + saving.amount);
+  }
+
+// Method to get static savings history
+  List<StaticSaving> getStaticSavingsHistory({int? limitDays}) {
+    if (limitDays == null) return staticSavingsList.toList();
+
+    DateTime cutoffDate = DateTime.now().subtract(Duration(days: limitDays));
+    return staticSavingsList
+        .where((saving) => saving.date.isAfter(cutoffDate))
+        .toList();
+  }
+
 
   // Add this method to your Home Controller
 

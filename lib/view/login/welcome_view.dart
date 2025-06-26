@@ -202,7 +202,7 @@ class _WelcomeViewState extends State<WelcomeView> with TickerProviderStateMixin
                             _buildEnhancedTimelineItem(
                               icon: Icons.track_changes_rounded,
                               title: "Smart Expense Tracking",
-                              description: "Effortlessly log and categorize expenses with intelligent suggestions and real-time budget alerts.",
+                              // description: "Effortlessly log and categorize expenses with intelligent suggestions and real-time budget alerts.",
                               textColor: textColor,
                               grayColor: grayColor,
                               gradientColors: [Colors.blue.shade400, Colors.blue.shade600],
@@ -212,7 +212,7 @@ class _WelcomeViewState extends State<WelcomeView> with TickerProviderStateMixin
                             _buildEnhancedTimelineItem(
                               icon: Icons.savings_rounded,
                               title: "Personalized Budgets",
-                              description: "Create custom budget plans that adapt to your lifestyle and financial goals.",
+                              // description: "Create custom budget plans that adapt to your lifestyle and financial goals.",
                               textColor: textColor,
                               grayColor: grayColor,
                               gradientColors: [Colors.green.shade400, Colors.green.shade600],
@@ -222,7 +222,7 @@ class _WelcomeViewState extends State<WelcomeView> with TickerProviderStateMixin
                             _buildEnhancedTimelineItem(
                               icon: Icons.analytics_rounded,
                               title: "Detailed Analytics",
-                              description: "Get comprehensive insights with beautiful charts and reports to make smarter financial decisions.",
+                              // description: "Get comprehensive insights with beautiful charts and reports to make smarter financial decisions.",
                               textColor: textColor,
                               grayColor: grayColor,
                               gradientColors: [Colors.purple.shade400, Colors.purple.shade600],
@@ -332,7 +332,7 @@ class _WelcomeViewState extends State<WelcomeView> with TickerProviderStateMixin
   Widget _buildEnhancedTimelineItem({
     required IconData icon,
     required String title,
-    required String description,
+    // required String description,
     required Color textColor,
     required Color grayColor,
     required List<Color> gradientColors,
@@ -420,15 +420,15 @@ class _WelcomeViewState extends State<WelcomeView> with TickerProviderStateMixin
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text(
-                    description,
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: grayColor,
-                      height: 1.4,
-                      letterSpacing: 0.1,
-                    ),
-                  ),
+                  // Text(
+                  //   // description,
+                  //   style: TextStyle(
+                  //     fontSize: 15,
+                  //     color: grayColor,
+                  //     height: 1.4,
+                  //     letterSpacing: 0.1,
+                  //   ),
+                  // ),
                 ],
               ),
             ),
